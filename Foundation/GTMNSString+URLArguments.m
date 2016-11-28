@@ -23,16 +23,12 @@
 - (NSString *)gtm_stringByEscapingForURLArgument {
   // Encode all the reserved characters, per RFC 3986
   // (<http://www.ietf.org/rfc/rfc3986.txt>)
-  CFStringRef escaped =
-    CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-                                            (CFStringRef)self,
-                                            NULL,
-                                            (CFStringRef)@"!*'();:@&=+$,/?%#[]",
-                                            kCFStringEncodingUTF8);
+  NSString *escaped = [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"!*'();:@&=+$,/?%#[]"]];
+
 #if defined(__has_feature) && __has_feature(objc_arc)
-  return CFBridgingRelease(escaped);
+  return escaped;
 #else
-  return [(NSString *)escaped autorelease];
+  return [escaped autorelease];
 #endif
 }
 
@@ -42,7 +38,7 @@
                                 withString:@" "
                                    options:NSLiteralSearch
                                      range:NSMakeRange(0, [resultString length])];
-  return [resultString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+  return [resultString stringByRemovingPercentEncoding];
 }
 
 @end
