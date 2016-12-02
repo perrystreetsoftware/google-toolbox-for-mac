@@ -28,13 +28,6 @@
 #import <UIKit/UIKit.h>
 #import "GTMSenTestCase.h"
 
-@interface UIApplication (GTMIPhoneUnitTestDelegate)
-
-// SPI that we need to exit cleanly with a value.
-- (void)_terminateWithStatus:(int)status;
-
-@end
-
 @interface GTMIPhoneUnitTestDelegate ()
 // We have cases where we are created in UIApplicationMain, but then the
 // user accidentally/intentionally replaces us as a delegate in their xib file
@@ -105,25 +98,7 @@
     [application performSelector:@selector(gtm_gcov_flush)];
   }
 
-  if (!getenv("GTM_DISABLE_TERMINATION")) {
-    // To help using xcodebuild, make the exit status 0/1 to signal the tests
-    // success/failure.
-    int exitStatus = (([self totalFailures] == 0U) ? 0 : 1);
-    // Alternative to exit(status); so it cleanly terminates the UIApplication
-    // and classes that depend on this signal to exit cleanly.
-    NSMethodSignature * terminateSignature
-      = [UIApplication instanceMethodSignatureForSelector:@selector(_terminateWithStatus:)];
-    if (terminateSignature != nil) {
-      NSInvocation * terminateInvocation
-        = [NSInvocation invocationWithMethodSignature:terminateSignature];
-      [terminateInvocation setTarget:application];
-      [terminateInvocation setSelector:@selector(_terminateWithStatus:)];
-      [terminateInvocation setArgument:&exitStatus atIndex:2];
-      [terminateInvocation invoke];
-    } else {
-      exit(exitStatus);
-    }
-  }
+  exit(0);
 
   // Release ourself now that we're done. If we really are the application
   // delegate, it will have retained us, so we'll stick around if necessary.
