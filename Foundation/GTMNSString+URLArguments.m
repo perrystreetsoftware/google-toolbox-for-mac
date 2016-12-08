@@ -25,11 +25,7 @@
   // (<http://www.ietf.org/rfc/rfc3986.txt>)
   NSString *escaped = [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"!*'();:@&=+$,/?%#[]"]];
 
-#if defined(__has_feature) && __has_feature(objc_arc)
   return escaped;
-#else
-  return [escaped autorelease];
-#endif
 }
 
 - (NSString *)gtm_stringByUnescapingFromURLArgument {
